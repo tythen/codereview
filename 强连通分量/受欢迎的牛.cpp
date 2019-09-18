@@ -1,0 +1,100 @@
+#include<iostream>
+#include<cstdio>
+#include<cmath>
+#include<cstring>
+#include<algorithm>
+#include<queue>
+#define re register
+#define ll long long
+
+#define up(i,a,b) for(register int i=a;i<=b;i++) 
+#define down(i,a,b) for(register int i=a;i>=b;i--)
+#define Auto(i,x) for(register int i=h[x];i;i=e[i].nxt)
+using namespace std;
+struct ios{
+	inline char fchar(){
+		static char buf[100000],*p1=buf,*p2=buf;
+		return p1==p2&&(p2=(p1=buf)+fread(buf,1,100000,stdin),p1==p2)?EOF:*p1++;
+	}
+//	#define getchar fchar
+	template <typename ty> inline ios& operator >> (ty &x)
+	{
+		register int f=1;x=0;register char c=getchar();
+		for(;c<'0'||c>'9';c=getchar()) if(c=='-') f=-1;
+		for(;c>='0'&&c<='9';c=getchar()) x=(x<<1)+(x<<3)+(c^48);
+		x*=f;return *this;
+	}
+	template <typename ty>  inline ios& operator << (ty x)
+	{
+		if(x<0) x=-x,putchar('-');
+		if(x>9) *this << x/10;
+		putchar(x%10+48);
+		return *this;
+	}
+	inline ios& operator << (char x){putchar(x);return *this;}
+}io;
+const int N = 5e4+5;
+struct node{int x,y;}oe[N<<1];
+struct edge{
+	int v,nxt;
+}e[N<<1];
+int h[N],tot;
+inline void add(int x,int y){
+	e[++tot] = (edge){y,h[x]};
+	h[x] = tot;
+}
+int vis[N];
+int col[N],cnt,w[N];
+int low[N],dfn[N],idx,stk[N],top;
+inline void tarjan(int x){
+	low[x] = dfn[x] = ++idx;
+	vis[x] = 1;
+	stk[++top] = x;
+	Auto(i,x){
+		int v = e[i].v;
+		if(!dfn[v]){
+			tarjan(v);
+			low[x] = min(low[v],low[x]);
+		}else if(vis[v]) low[x] = min(low[x],low[v]);
+	}
+	if(low[x]==dfn[x]){
+		++cnt;
+		while(stk[top] != x){
+			int v = stk[top--];
+			vis[v] = 0;
+			col[v] = cnt;
+			w[cnt]++;
+		}
+		int v = stk[top--];
+		vis[v] = 0;
+		col[v] = cnt;
+		w[cnt]++;		
+	}
+}
+queue <int> q;
+int in[N],out[N];
+int n,m,a,b;
+int main(){
+	io >> n >> m;
+	up(i,1,m) io >> a >> b,add(a,b),oe[i].x = a,oe[i].y =b;
+	up(i,1,n) if(!dfn[i]) tarjan(i);
+	up(i,0,n) h[i] = 0;
+	tot = 0;
+	up(i,1,m){
+		if(col[oe[i].x] != col[oe[i].y]){
+			add(col[oe[i].x],col[oe[i].y]);
+			in[col[oe[i].y]] ++;
+			out[col[oe[i].x]] ++;
+		}
+	}
+	int flag = 0,ans;
+	up(i,1,cnt){
+		if(!out[i]) flag ++,ans = w[i];
+	}
+	if(flag >= 2) {
+		puts("0");
+		return 0;
+	}
+	io << ans;
+	return 0;
+}
