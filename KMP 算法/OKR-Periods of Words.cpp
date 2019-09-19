@@ -30,7 +30,16 @@ struct ios{
 	inline int rd(){int x;*this >> x;return x;}
 }io;
 const int N = 2e6+5; 
+int ret[N];
 int nxt[N];
+inline int dfs(int x)
+{
+	if(x==0) return 0;
+	if(ret[x] != -1) return ret[x];
+	int tp = dfs(nxt[x]);
+	if(tp) return ret[x] = tp;
+	else return ret[x] = x;
+}
 inline void make_nxt(char *P,int len)
 {
 	nxt[1] = 0;int j = 0;
@@ -42,12 +51,26 @@ inline void make_nxt(char *P,int len)
 	}
 }
 
-char T[N],P[N];
-int lenT,lenP;
+char P[N];
+int lenP;
+ll ans;
 int main()
 {
 	io >> lenP;
 	scanf("%s",P+1);
 	make_nxt(P,lenP);
-	io << lenP - nxt[lenP];//结论题 
+	up(i,1,lenP) ret[i] = -1;
+	for(int i=lenP;i>=1;i--)
+	{
+		int j = dfs(i);
+		ans += i - j;
+		/*
+		另一种写法：
+		while(nxt[j]) j=nxt[j];
+		if(nxt[i]) nxt[i]=j;//记忆化 直接把这一位前面的都不管了 比我快 
+		ans+=i-j; 
+		*/
+	}
+	io << ans;
+	return 0;
 }

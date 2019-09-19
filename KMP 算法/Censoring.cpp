@@ -31,6 +31,7 @@ struct ios{
 }io;
 const int N = 2e6+5; 
 int nxt[N];
+int l[N],r[N];
 inline void make_nxt(char *P,int len)
 {
 	nxt[1] = 0;int j = 0;
@@ -40,14 +41,33 @@ inline void make_nxt(char *P,int len)
 		if(P[i] == P[j+1]) j++;
 		nxt[i] = j;
 	}
-}
 
-char T[N],P[N];
-int lenT,lenP;
+}
+char T[N],P[N],ans[N];
+int lenT,lenP,cnt,f[N];
 int main()
 {
-	io >> lenP;
-	scanf("%s",P+1);
+	scanf("%s%s",T+1,P+1);
+	lenT = strlen(T+1);
+	lenP = strlen(P+1);
 	make_nxt(P,lenP);
-	io << lenP - nxt[lenP];//结论题 
+	for(int i=1;i<=lenT;i++) l[i] = i-1,r[i] = i+1;
+	r[0] = 1;
+	l[lenT+1] = lenT;
+	for(int i=1,j=0;i<=lenT;i=r[i])//用链表 
+	{
+		while(j>0 && (j==lenP ||T[i] != P[j+1])) j = nxt[j];
+		if(T[i] == P[j+1]) j++;
+		f[i] = j;
+		if(j==lenP)
+		{
+			int R = r[i];
+			up(tp,1,lenP) i = l[i];//向左跳lenP次 
+			r[i] = R;
+			l[R] = i;
+			j = f[i];
+		}
+	}
+	for(int i=r[0];i!=lenT+1;i=r[i]) io << T[i];
+	return 0;
 }
