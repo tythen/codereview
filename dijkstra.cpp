@@ -73,6 +73,7 @@ inline void dijkstra(int st){
 }
 ll a,b,c;
 int main(){
+	freopen("castle7.in","r",stdin);
 	io >> n >> m >> s;
 	up(i,1,m){
 		io >> a >> b >> c;
