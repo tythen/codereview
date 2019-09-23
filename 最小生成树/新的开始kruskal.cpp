@@ -42,7 +42,6 @@ inline int find(int x){return x==fa[x] ? x : fa[x] = find(fa[x]);}
 inline bool cmp(node a,node b){return a.w < b.w;}
 int main()
 {
-//	freopen("water.3.in","r",stdin);
 	io >> n;
 	up(i,1,n) io >> w[i],fa[i] = i,ee[++tot] = (node){n+1,i,w[i]};
 	up(i,1,n) up(j,1,n) io >> e[i][j];
