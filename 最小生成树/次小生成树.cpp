@@ -29,7 +29,7 @@ struct ios{
 	inline ios& operator << (char x){putchar(x);return *this;}
 }io;
 const int N = 1e6+5;
-const ll inf = 99999999999;
+const ll inf = 99999999999;// 开99999999999过不了 
 struct node{int u,v;ll w;}oe[N<<1];
 int fa[N];
 inline int find(int x){return fa[x]==x? x:fa[x] = find(fa[x]);}
@@ -93,6 +93,8 @@ ll sum = 0;
 int n,m,a,b,c,vis[N];
 int main()
 {
+	freopen("tree10.in","r",stdin);
+	freopen("ans.out","w",stdout);
 	io >> n >> m;
 	up(i,1,m)
 	{
@@ -114,6 +116,7 @@ int main()
 		if(cnt == n-1) break;
 	}
 	dfs(1,0);
+	up(i,1,10) up(x,1,n) io << spmax[i][x] << ' ';
 	ll ans = inf;
 	up(i,1,m)
 	{
@@ -121,6 +124,7 @@ int main()
 		int LCA = lca(oe[i].u,oe[i].v);
 		ll lmax = qmax(oe[i].u,LCA,oe[i].w);
 		ll rmax = qmax(oe[i].v,LCA,oe[i].w);
+//		io << lmax <<' '<< rmax<<'\n';
 		ll nans = sum - max(lmax, rmax) + oe[i].w;
 		ans = min(ans,nans);
 	}
