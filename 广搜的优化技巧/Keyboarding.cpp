@@ -38,61 +38,56 @@ const int N = 200;
 上下左右正常地搜
 关于“选择 ” 可以保存当前stage所拿着的字符串 与 目标字符串匹配的 位置，每次判断是否光标的字符是需要的，如果是就 “选择”
 
+
+写的时候vis应该预先标-1，因为可能开始pos为0，这时也视作来过不过pos小
+然后预处理每个位置各个方向上下一个位置在哪里免得再跳 
 */
 #define num(x,y) ((x-1)*m+y)
 int dx[] = {0,0,1,-1};
 int dy[] = {1,-1,0,0};
-map <pair<int,int> ,int> ma;
-struct stage{int x,y,step,pos,dir;};
+//map <pair<int,int> ,int> ma;
+struct stage{int x,y,step,pos;};
 queue <stage> q;
 int n,m;
 char ed[10005];
 char pic[N][N];
+int vis[N*N];
+pair<int,int> jup[5][N][N];
 int len;
 inline int bfs()
 {
-	q.push((stage){1,1,0,0,0});
+	q.push((stage){1,1,0,0});
 	while(!q.empty())
 	{
 		int x = q.front().x;
 		int y = q.front().y;
 		int step = q.front().step;
-		
 		int pos = q.front().pos;
-		int dir = q.front().dir;
-
-		
 		q.pop();
-		printf("hi there(%d,%d) %c pos = %d,step = %d\n",x,y,pic[x][y],pos,step);
 		if(pic[x][y] == ed[pos+1])
 		{
-			printf("we can go to next char!");
-			up(i,1,pos) io << ed[i];printf("+%c",ed[pos+1]);puts("");
-//			pau
-			if(!ma[make_pair(num(x,y),pos + (dir)*10000)])
+			if(vis[num(x,y)]==-1 || vis[num(x,y)] < pos+1)
 			{
-				q.push((stage){x,y,step+1,pos+1,dir});
-				ma[make_pair(num(x,y),pos + (dir)*10000)] = 1;
-				if(pos+1 == len) return step+1;
+				q.push((stage){x,y,step+1,pos+1});
+				vis[num(x,y)] = pos+1;
 			}
+			if(pos+1 == len) return step+1;
 		}
 		up(i,0,3)
 		{
 			int xx = x + dx[i];
 			int yy = y + dy[i];
-			while(pic[xx][yy] == pic[x][y]) xx += dx[i],yy += dy[i];
+			xx = jup[i][x][y].first,
+			yy = jup[i][x][y].second;
 			if(xx>=1 && xx<=n && yy>=1 && yy<=m)
 			{
-				if(!ma[make_pair(num(xx,yy),pos + (i+1)*10000)])
+				if(vis[num(xx,yy)]==-1 || vis[num(xx,yy)] < pos)
 				{
-//					io << num(xx,yy) << ':' << pic[xx][yy] << ' ';
-					printf("(%d,%d):%c    ",xx,yy,pic[xx][yy]);
-					ma[make_pair(num(xx,yy),pos + (i+1)*10000)] = 1;
-					q.push((stage){xx,yy,step+1,pos,i+1});
+					q.push((stage){xx,yy,step+1,pos});
+					vis[num(xx,yy)] = pos; 
 				}
 			}
 		}
-		io << '\n';
 	}
 	return -1;
 }
@@ -104,6 +99,18 @@ int main()
 	scanf("%s",ed+1);
 	len = strlen(ed+1);
 	ed[++len] = '*';ed[len+1] = '\0';
+	
+	up(i,1,n) up(j,1,m)
+	{
+		up(d,0,3)
+		{
+			int xx = i+dx[d],yy = j+dy[d];
+			while(pic[xx][yy] == pic[i][j]) xx += dx[d],yy += dy[d];
+			jup[d][i][j] = make_pair(xx,yy);
+		}
+		vis[num(i,j)] = -1;
+	}
+	
 	io << bfs();
 	return 0;
 }
